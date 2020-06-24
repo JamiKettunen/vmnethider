@@ -54,6 +54,7 @@ const VMNetHider = new Lang.Class({
                         this._deviceAdded(_devices[i]._getDescription(), _devices[i]);
                     }
                 }
+                // FIXME: hide new vmnet interfaces that may appear after the extension has been launched
                 _devices.watch('length', function () {
                     let _network = Main.panel.statusArea.aggregateMenu._network;
                     let _devices = _network._devices.wired.devices;
@@ -76,26 +77,21 @@ const VMNetHider = new Lang.Class({
         }
 
         log(extensionName + ' hide: ' + deviceDescription);
-        device.item.actor.watch('visible', function (property, from, to) {
-            if (to) {
-                log(extensionName + ' rehide: ' + deviceDescription);
-                device.item.actor.visible = false;
-            }
-        });
-
+        // FIXME: rehide interface if it becomes visible again somehow (device.item.actor.watch has been deprecated!)
         device.item.actor.visible = false;
         this._ethDevices[deviceDescription].device = device;
     },
 
     _deviceRemoved : function(deviceDescription, device) {
         log(extensionName + ' show: ' + deviceDescription);
-        device.item.actor.unwatch('visible');
+        // FIXME: stop watching for changes to the device's visible property (device.item.actor.watch has been deprecated!)
 
         device.item.actor.visible = true;
         delete this._ethDevices[deviceDescription];
     },
 
     destroy : function() {
+        // FIXME: stop watching for changes to the ethernet device's length (count) property
         Main.panel.statusArea.aggregateMenu._network._devices.wired.devices.unwatch('length');
         for ( var deviceDescription in this._ethDevices) {
             if (this._ethDevices.hasOwnProperty(deviceDescription)) {
